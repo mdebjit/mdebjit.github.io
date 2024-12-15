@@ -1,0 +1,4 @@
+baseURL = 'https://mdebjit.github.io/'
+languageCode = 'en-us'
+title = 'Ctrl + Alt + Escape'
+theme = 'LoveIt'
