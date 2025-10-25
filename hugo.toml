@@ -2,3 +2,195 @@ baseURL = 'https://mdebjit.github.io/'
 languageCode = 'en-us'
 title = 'Ctrl + Alt + Escape'
 theme = 'LoveIt'
+
+# Enable emojis and git info
+enableEmoji = true
+enableGitInfo = true
+enableRobotsTXT = true
+
+# Pagination (new syntax for Hugo v0.128+)
+[pagination]
+  pagerSize = 12
+
+# Author configuration (moved to params for Hugo v0.124+)
+[params.author]
+  name = "mdebjit"
+  email = "debjitmondal05@gmail.com"
+  link = "https://github.com/mdebjit"
+
+# Menu configuration - Three main categories
+[menu]
+  [[menu.main]]
+    weight = 1
+    identifier = "ctrl"
+    pre = "<i class='fas fa-code fa-fw' aria-hidden='true'></i>"
+    name = "Ctrl"
+    url = "/categories/ctrl/"
+    title = "Tech Blog - Programming, Development, and Technology"
+  [[menu.main]]
+    weight = 2
+    identifier = "alt"
+    pre = "<i class='fas fa-book-open fa-fw' aria-hidden='true'></i>"
+    name = "Alt"
+    url = "/categories/alt/"
+    title = "Life Blog - Finance, Economics, Books, Running, and Hobbies"
+  [[menu.main]]
+    weight = 3
+    identifier = "escape"
+    pre = "<i class='fas fa-mountain fa-fw' aria-hidden='true'></i>"
+    name = "Escape"
+    url = "/categories/escape/"
+    title = "Adventure Blog - Travel, Hiking, and Exploration"
+  [[menu.main]]
+    weight = 4
+    identifier = "posts"
+    pre = "<i class='fas fa-list fa-fw' aria-hidden='true'></i>"
+    name = "All Posts"
+    url = "/posts/"
+    title = "Browse All Blog Posts"
+  [[menu.main]]
+    weight = 5
+    identifier = "tags"
+    pre = "<i class='fas fa-tags fa-fw' aria-hidden='true'></i>"
+    name = "Tags"
+    url = "/tags/"
+    title = "Browse by Tags"
+  [[menu.main]]
+    weight = 6
+    identifier = "about"
+    pre = "<i class='fas fa-user fa-fw' aria-hidden='true'></i>"
+    name = "About"
+    url = "/about/"
+    title = "About Me"
+
+# Site parameters
+[params]
+  # Site theme
+  defaultTheme = "auto"
+  
+  # Git repository
+  gitRepo = "https://github.com/mdebjit/mdebjit.github.io"
+  
+  # Date format
+  dateFormat = "2006-01-02"
+  
+  # Site description
+  description = "A blog about technology, life, and adventures - where Ctrl meets Alt meets Escape"
+  
+  # Site images
+  images = ["/images/site-preview.png"]
+
+  # Header configuration
+  [params.header]
+    desktopMode = "fixed"
+    mobileMode = "auto"
+    [params.header.title]
+      logo = ""
+      name = "Ctrl + Alt + Escape"
+      pre = "<i class='fas fa-keyboard fa-fw' aria-hidden='true'></i>"
+      post = ""
+      typeit = false
+
+  # Footer configuration
+  [params.footer]
+    enable = true
+    custom = ""
+    hugo = false
+    copyright = false
+    author = true
+    since = 2025
+    license = '© 2025 mdebjit | <a href="/license/">License & Terms</a> |'
+
+  # Home page configuration
+  [params.home]
+    rss = 10
+    [params.home.profile]
+      enable = true
+      avatarURL = "/images/avatar.png"
+      title = "Ctrl + Alt + Escape"
+      subtitle = "Not all who wander are lost, some are just debugging"
+      typeit = true
+      social = true
+      disclaimer = ""
+    [params.home.posts]
+      enable = true
+      paginate = 6
+
+  # Social configuration
+  [params.social]
+    GitHub = "mdebjit"
+    Email = ""
+    RSS = true
+
+  # Page configuration
+  [params.page]
+    hiddenFromHomePage = false
+    hiddenFromSearch = false
+    twemoji = false
+    lightgallery = true
+    ruby = true
+    fraction = true
+    fontawesome = true
+    linkToMarkdown = true
+    rssFullText = false
+    
+    [params.page.toc]
+      enable = true
+      keepStatic = false
+      auto = true
+    
+    [params.page.code]
+      copy = true
+      maxShownLines = 50
+    
+    [params.page.math]
+      enable = true
+      inlineLeftDelimiter = ""
+      inlineRightDelimiter = ""
+      blockLeftDelimiter = ""
+      blockRightDelimiter = ""
+      copyTex = true
+      mhchem = true
+    
+    [params.page.share]
+      enable = true
+      Twitter = true
+      Facebook = true
+      Linkedin = true
+      Reddit = true
+      HackerNews = true
+      Line = false
+      Weibo = false
+
+# Markup configuration
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = false
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      definitionList = true
+      footnote = true
+      linkify = true
+      strikethrough = true
+      table = true
+      taskList = true
+      typographer = true
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 6
+
+# Permalinks - Clean URLs
+[Permalinks]
+  posts = "/:year/:month/:slug/"
+
+# Taxonomies - Categories and Tags
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  series = "series"

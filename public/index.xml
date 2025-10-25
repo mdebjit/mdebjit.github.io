@@ -2,8 +2,8 @@
     <channel>
         <title>Ctrl &#43; Alt &#43; Escape</title>
         <link>http://localhost:1313/</link>
-        <description>Loading awesomeness...</description>
-        <generator>Hugo -- gohugo.io</generator><language>en-us</language>
+        <description>A blog about technology, life, and adventures - where Ctrl meets Alt meets Escape</description>
+        <generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 25 Oct 2025 00:00:00 &#43;0000</lastBuildDate>
             <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
         </channel>
 </rss>
