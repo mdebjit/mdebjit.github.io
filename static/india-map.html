@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Travel Map</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+        }
+        
+        .state {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .state:hover {
+            filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.8));
+        }
+        
+        /* For direct path/circle elements */
+        path.state:hover,
+        circle.state:hover {
+            fill: #4CAF50 !important;
+        }
+        
+        path.state.visited,
+        circle.state.visited {
+            fill: #4CAF50 !important;
+        }
+        
+        /* For group elements with children */
+        .state:hover path,
+        .state:hover circle,
+        .state:hover ellipse {
+            fill: #4CAF50 !important;
+        }
+        
+        .state.visited path,
+        .state.visited circle,
+        .state.visited ellipse {
+            fill: #4CAF50 !important;
+        }
+        
+        .state path,
+        .state circle,
+        .state ellipse {
+            pointer-events: all;
+        }
+        
+        .state-label {
+            pointer-events: none;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+        
+        #india-map-container {
+            max-width: 900px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #333;
+        }
+        
+        #reset-btn {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        #reset-btn:hover {
+            background: #d32f2f;
+        }
+        
+        #visit-count {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="india-map-container">
+        <svg id="india-map" viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto; border: 1px solid #ddd; background: #f8f9fa;">
+            <path id="jk" class="state" d="M 200 80 L 250 70 L 280 90 L 270 120 L 240 130 L 210 110 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="240" y="105" class="state-label" font-size="10" fill="#333">J&amp;K</text>
+            
+            <path id="ladakh" class="state" d="M 280 90 L 330 75 L 360 100 L 340 130 L 310 135 L 280 120 L 270 120 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="310" y="110" class="state-label" font-size="10" fill="#333">Ladakh</text>
+            
+            <path id="hp" class="state" d="M 240 130 L 270 120 L 290 145 L 270 165 L 240 155 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="255" y="145" class="state-label" font-size="9" fill="#333">HP</text>
+            
+            <path id="punjab" class="state" d="M 210 135 L 240 130 L 240 155 L 220 170 L 200 160 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="215" y="150" class="state-label" font-size="9" fill="#333">Punjab</text>
+            
+            <circle id="chandigarh" class="state" cx="225" cy="155" r="4" fill="#ff6b6b" stroke="#333" stroke-width="1"></circle>
+            <text x="232" y="158" class="state-label" font-size="8" fill="#333">CHD</text>
+            
+            <path id="haryana" class="state" d="M 220 170 L 240 155 L 270 165 L 280 190 L 250 200 L 230 190 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="245" y="180" class="state-label" font-size="9" fill="#333">Haryana</text>
+            
+            <circle id="delhi" class="state" cx="255" cy="185" r="5" fill="#ff6b6b" stroke="#333" stroke-width="1.5"></circle>
+            <text x="262" y="188" class="state-label" font-size="8" fill="#333">Delhi</text>
+            
+            <path id="uttarakhand" class="state" d="M 270 165 L 310 155 L 330 180 L 315 200 L 280 195 L 270 180 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="290" y="180" class="state-label" font-size="9" fill="#333">UK</text>
+            
+            <path id="up" class="state" d="M 250 200 L 280 190 L 315 200 L 380 210 L 400 240 L 380 270 L 330 265 L 290 250 L 260 235 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="320" y="235" class="state-label" font-size="10" fill="#333">Uttar Pradesh</text>
+            
+            <path id="rajasthan" class="state" d="M 160 190 L 230 190 L 260 235 L 250 290 L 200 310 L 140 280 L 130 230 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="190" y="250" class="state-label" font-size="10" fill="#333">Rajasthan</text>
+            
+            <path id="gujarat" class="state" d="M 90 310 L 140 280 L 200 310 L 190 370 L 150 400 L 100 380 L 70 350 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="130" y="350" class="state-label" font-size="10" fill="#333">Gujarat</text>
+            
+            <circle id="dnh-dd" class="state" cx="125" cy="385" r="3" fill="#ff6b6b" stroke="#333" stroke-width="1"></circle>
+            <text x="130" y="388" class="state-label" font-size="7" fill="#333">DNH/DD</text>
+            
+            <path id="maharashtra" class="state" d="M 190 370 L 240 350 L 290 370 L 310 420 L 280 470 L 230 460 L 180 440 L 150 400 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="230" y="410" class="state-label" font-size="10" fill="#333">Maharashtra</text>
+            
+            <path id="mp" class="state" d="M 250 290 L 330 265 L 380 290 L 370 340 L 340 360 L 290 370 L 240 350 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="300" y="320" class="state-label" font-size="10" fill="#333">Madhya Pradesh</text>
+            
+            <path id="goa" class="state" d="M 205 460 L 230 460 L 235 485 L 215 490 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="215" y="478" class="state-label" font-size="8" fill="#333">Goa</text>
+            
+            <path id="karnataka" class="state" d="M 235 485 L 280 470 L 320 500 L 320 560 L 280 580 L 240 570 L 220 530 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="265" y="530" class="state-label" font-size="10" fill="#333">Karnataka</text>
+            
+            <path id="kerala" class="state" d="M 240 570 L 280 580 L 285 640 L 270 690 L 240 680 L 230 630 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="250" y="635" class="state-label" font-size="10" fill="#333">Kerala</text>
+            
+            <path id="tamilnadu" class="state" d="M 285 640 L 320 560 L 360 580 L 380 630 L 370 680 L 330 700 L 285 690 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="330" y="640" class="state-label" font-size="10" fill="#333">Tamil Nadu</text>
+            
+            <circle id="puducherry" class="state" cx="345" cy="650" r="3" fill="#ff6b6b" stroke="#333" stroke-width="1"></circle>
+            <text x="350" y="653" class="state-label" font-size="7" fill="#333">PY</text>
+            
+            <path id="ap" class="state" d="M 320 500 L 370 480 L 410 510 L 410 560 L 380 580 L 360 580 L 320 560 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="360" y="535" class="state-label" font-size="9" fill="#333">Andhra Pradesh</text>
+            
+            <path id="telangana" class="state" d="M 310 420 L 350 410 L 390 440 L 380 480 L 340 480 L 310 455 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="345" y="450" class="state-label" font-size="9" fill="#333">Telangana</text>
+            
+            <path id="chhattisgarh" class="state" d="M 340 360 L 390 350 L 420 380 L 410 420 L 380 430 L 350 410 L 340 385 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="370" y="390" class="state-label" font-size="9" fill="#333">CG</text>
+            
+            <path id="odisha" class="state" d="M 420 380 L 470 370 L 490 410 L 480 450 L 450 460 L 420 440 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="450" y="415" class="state-label" font-size="9" fill="#333">Odisha</text>
+            
+            <path id="jharkhand" class="state" d="M 390 290 L 440 280 L 470 310 L 465 340 L 440 350 L 410 340 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="430" y="315" class="state-label" font-size="9" fill="#333">JH</text>
+            
+            <path id="wb" class="state" d="M 440 280 L 490 265 L 520 290 L 520 330 L 495 360 L 470 370 L 465 340 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="485" y="310" class="state-label" font-size="9" fill="#333">West Bengal</text>
+            
+            <path id="bihar" class="state" d="M 380 240 L 440 230 L 480 245 L 480 270 L 440 280 L 390 270 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="430" y="258" class="state-label" font-size="9" fill="#333">Bihar</text>
+            
+            <path id="sikkim" class="state" d="M 505 235 L 525 230 L 530 250 L 515 255 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="512" y="245" class="state-label" font-size="7" fill="#333">SK</text>
+            
+            <path id="arunachal" class="state" d="M 540 200 L 610 190 L 640 220 L 630 250 L 580 260 L 540 240 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="575" y="230" class="state-label" font-size="9" fill="#333">Arunachal</text>
+            
+            <path id="assam" class="state" d="M 520 250 L 540 240 L 580 260 L 590 290 L 560 305 L 520 295 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="545" y="278" class="state-label" font-size="9" fill="#333">Assam</text>
+            
+            <path id="nagaland" class="state" d="M 590 290 L 620 280 L 630 305 L 610 315 L 590 305 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="605" y="300" class="state-label" font-size="8" fill="#333">NL</text>
+            
+            <path id="manipur" class="state" d="M 590 305 L 610 315 L 610 340 L 590 345 L 575 330 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="593" y="330" class="state-label" font-size="8" fill="#333">MN</text>
+            
+            <path id="mizoram" class="state" d="M 575 330 L 590 345 L 590 375 L 570 380 L 560 360 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="572" y="360" class="state-label" font-size="8" fill="#333">MZ</text>
+            
+            <path id="tripura" class="state" d="M 545 320 L 565 315 L 570 340 L 555 350 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="553" y="335" class="state-label" font-size="8" fill="#333">TR</text>
+            
+            <path id="meghalaya" class="state" d="M 520 295 L 560 305 L 560 325 L 540 330 L 520 315 Z" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></path>
+            <text x="532" y="315" class="state-label" font-size="8" fill="#333">ML</text>
+            
+            <g id="andaman" class="state">
+                <ellipse cx="680" cy="500" rx="15" ry="60" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></ellipse>
+                <text x="665" y="570" class="state-label" font-size="9" fill="#333">A&amp;N</text>
+            </g>
+            
+            <g id="lakshadweep" class="state">
+                <circle cx="150" cy="630" r="8" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></circle>
+                <circle cx="155" cy="650" r="6" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></circle>
+                <circle cx="165" cy="665" r="5" fill="#e0e0e0" stroke="#333" stroke-width="1.5"></circle>
+                <text x="140" y="690" class="state-label" font-size="9" fill="#333">Lakshadweep</text>
+            </g>
+        </svg>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-box" style="background-color: #4CAF50;"></div>
+            <span>Visited</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background-color: #e0e0e0;"></div>
+            <span>Not Visited</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background-color: #ff6b6b;"></div>
+            <span>Union Territory</span>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <button id="reset-btn">Reset All</button>
+    </div>
+
+    <span id="visit-count">0 / 36 visited</span>
+
+    <script>
+        const regions = {
+            'jk': 'Jammu & Kashmir', 'ladakh': 'Ladakh', 'hp': 'Himachal Pradesh', 'punjab': 'Punjab',
+            'haryana': 'Haryana', 'uttarakhand': 'Uttarakhand', 'up': 'Uttar Pradesh', 'rajasthan': 'Rajasthan',
+            'gujarat': 'Gujarat', 'maharashtra': 'Maharashtra', 'mp': 'Madhya Pradesh', 'goa': 'Goa',
+            'karnataka': 'Karnataka', 'kerala': 'Kerala', 'tamilnadu': 'Tamil Nadu', 'ap': 'Andhra Pradesh',
+            'telangana': 'Telangana', 'chhattisgarh': 'Chhattisgarh', 'odisha': 'Odisha', 'jharkhand': 'Jharkhand',
+            'wb': 'West Bengal', 'bihar': 'Bihar', 'sikkim': 'Sikkim', 'arunachal': 'Arunachal Pradesh',
+            'assam': 'Assam', 'nagaland': 'Nagaland', 'manipur': 'Manipur', 'mizoram': 'Mizoram',
+            'tripura': 'Tripura', 'meghalaya': 'Meghalaya', 'andaman': 'Andaman & Nicobar Islands',
+            'lakshadweep': 'Lakshadweep', 'chandigarh': 'Chandigarh', 'delhi': 'Delhi',
+            'dnh-dd': 'Dadra & Nagar Haveli and Daman & Diu', 'puducherry': 'Puducherry'
+        };
+
+        function loadVisitedStates() {
+            const visited = JSON.parse(localStorage.getItem('visitedIndianStates') || '[]');
+            visited.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.classList.add('visited');
+            });
+            updateCount();
+        }
+
+        function saveVisitedStates() {
+            const visited = [];
+            document.querySelectorAll('.state.visited').forEach(element => {
+                visited.push(element.id);
+            });
+            localStorage.setItem('visitedIndianStates', JSON.stringify(visited));
+            updateCount();
+        }
+
+        function toggleState(element) {
+            element.classList.toggle('visited');
+            saveVisitedStates();
+        }
+
+        function updateCount() {
+            const visited = document.querySelectorAll('.state.visited').length;
+            document.getElementById('visit-count').textContent = `${visited} / 36 visited`;
+            
+            // Send update to parent window
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'indiaMapUpdate',
+                    visited: getVisitedRegions()
+                }, '*');
+                
+                // Also send the visited places list for mutual exploration section
+                sendVisitedPlacesList();
+            }
+        }
+        
+        function sendVisitedPlacesList() {
+            const visitedPlaces = [];
+            const stateNames = {
+                'jk': 'Jammu & Kashmir',
+                'ladakh': 'Ladakh',
+                'hp': 'Himachal Pradesh',
+                'punjab': 'Punjab',
+                'haryana': 'Haryana',
+                'uttarakhand': 'Uttarakhand',
+                'up': 'Uttar Pradesh',
+                'rajasthan': 'Rajasthan',
+                'gujarat': 'Gujarat',
+                'maharashtra': 'Maharashtra',
+                'goa': 'Goa',
+                'mp': 'Madhya Pradesh',
+                'chhattisgarh': 'Chhattisgarh',
+                'wb': 'West Bengal',
+                'bihar': 'Bihar',
+                'jharkhand': 'Jharkhand',
+                'odisha': 'Odisha',
+                'sikkim': 'Sikkim',
+                'arunachal': 'Arunachal Pradesh',
+                'assam': 'Assam',
+                'nagaland': 'Nagaland',
+                'manipur': 'Manipur',
+                'mizoram': 'Mizoram',
+                'tripura': 'Tripura',
+                'meghalaya': 'Meghalaya',
+                'karnataka': 'Karnataka',
+                'kerala': 'Kerala',
+                'tamilnadu': 'Tamil Nadu',
+                'ap': 'Andhra Pradesh',
+                'telangana': 'Telangana',
+                'delhi': 'Delhi',
+                'chandigarh': 'Chandigarh',
+                'puducherry': 'Puducherry',
+                'dnh-dd': 'Dadra & Nagar Haveli and Daman & Diu',
+                'andaman': 'Andaman & Nicobar Islands',
+                'lakshadweep': 'Lakshadweep'
+            };
+            
+            document.querySelectorAll('.state.visited').forEach(element => {
+                const name = stateNames[element.id];
+                if (name) visitedPlaces.push(name);
+            });
+            
+            window.parent.postMessage({
+                type: 'visitedPlacesList',
+                places: visitedPlaces
+            }, '*');
+        }
+        
+        function getVisitedRegions() {
+            const visitedIds = [];
+            document.querySelectorAll('.state.visited').forEach(element => {
+                visitedIds.push(element.id);
+            });
+            
+            // Categorize by region
+            const regionMapping = {
+                north: ['jk', 'ladakh', 'hp', 'punjab', 'chandigarh', 'haryana', 'delhi', 'uttarakhand'],
+                south: ['karnataka', 'kerala', 'tamilnadu', 'ap', 'telangana'],
+                east: ['wb', 'bihar', 'jharkhand', 'odisha', 'sikkim'],
+                west: ['gujarat', 'maharashtra', 'goa'],
+                central: ['mp', 'chhattisgarh'],
+                northeast: ['arunachal', 'assam', 'nagaland', 'manipur', 'mizoram', 'tripura', 'meghalaya'],
+                islands: ['andaman', 'lakshadweep']
+            };
+            
+            const stats = {
+                states: 0,
+                uts: 0,
+                total: visitedIds.length,
+                regions: {
+                    north: { visited: 0, total: 8 },
+                    south: { visited: 0, total: 5 },
+                    east: { visited: 0, total: 5 },
+                    west: { visited: 0, total: 3 },
+                    central: { visited: 0, total: 2 },
+                    northeast: { visited: 0, total: 7 },
+                    islands: { visited: 0, total: 2 }
+                }
+            };
+            
+            const utIds = ['delhi', 'chandigarh', 'puducherry', 'dnh-dd', 'andaman', 'lakshadweep', 'ladakh', 'jk'];
+            
+            visitedIds.forEach(id => {
+                if (utIds.includes(id)) {
+                    stats.uts++;
+                } else {
+                    stats.states++;
+                }
+                
+                // Count by region
+                for (let region in regionMapping) {
+                    if (regionMapping[region].includes(id)) {
+                        stats.regions[region].visited++;
+                    }
+                }
+            });
+            
+            return stats;
+        }
+
+        Object.keys(regions).forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.cursor = 'pointer';
+                element.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleState(this);
+                });
+                
+                // Add title for tooltip
+                const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                title.textContent = regions[id];
+                element.insertBefore(title, element.firstChild);
+            }
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset all visited states?')) {
+                document.querySelectorAll('.state.visited').forEach(element => {
+                    element.classList.remove('visited');
+                });
+                localStorage.removeItem('visitedIndianStates');
+                updateCount();
+            }
+        });
+
+        loadVisitedStates();
+        
+        // Listen for requests from parent window
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'requestUpdate') {
+                window.parent.postMessage({
+                    type: 'indiaMapUpdate',
+                    visited: getVisitedRegions()
+                }, '*');
+            }
+            
+            if (event.data.type === 'requestVisitedPlaces') {
+                sendVisitedPlacesList();
+            }
+        });
+        
+        // Send initial stats to parent
+        if (window.parent !== window) {
+            setTimeout(() => {
+                window.parent.postMessage({
+                    type: 'indiaMapUpdate',
+                    visited: getVisitedRegions()
+                }, '*');
+                sendVisitedPlacesList();
+            }, 100);
+        }
+    </script>
+</body>
+</html>

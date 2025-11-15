@@ -68,8 +68,8 @@ enableRobotsTXT = true
   # Site theme
   defaultTheme = "auto"
   
-  # Git repository
-  gitRepo = "https://github.com/mdebjit/mdebjit.github.io"
+  # Git repository - Disabled to hide commit hash in footer
+  # gitRepo = "https://github.com/mdebjit/mdebjit.github.io"
   
   # Date format
   dateFormat = "2006-01-02"

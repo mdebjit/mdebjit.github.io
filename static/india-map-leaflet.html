@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Travel Map - Interactive</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        #map {
+            width: 100%;
+            height: 600px;
+        }
+        
+        .info-box {
+            padding: 6px 8px;
+            font-size: 14px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .info-box h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+        
+        .legend {
+            padding: 10px;
+            font-size: 14px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+        
+        .visited-count {
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map centered on India
+        const map = L.map('map', {
+            center: [22.5, 79.0],
+            zoom: 5,
+            minZoom: 4,
+            maxZoom: 7,
+            zoomControl: true
+        });
+
+        // Add a clean base layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Store visited states
+        let visitedStates = new Set();
+        
+        // Load visited states from localStorage
+        try {
+            const saved = localStorage.getItem('indiaMapVisited');
+            if (saved) {
+                visitedStates = new Set(JSON.parse(saved));
+            }
+        } catch (e) {
+            console.error('Error loading saved data:', e);
+        }
+
+        // Indian states and UTs - all as points for uniform circle markers
+        const indiaStates = {
+            "type": "FeatureCollection",
+            "features": [
+                // Northern Region
+                {"type": "Feature", "properties": {"name": "Jammu & Kashmir", "id": "jk"}, 
+                 "geometry": {"type": "Point", "coordinates": [75.0, 34.0]}},
+                
+                {"type": "Feature", "properties": {"name": "Ladakh", "id": "ladakh"}, 
+                 "geometry": {"type": "Point", "coordinates": [77.5, 34.5]}},
+                
+                {"type": "Feature", "properties": {"name": "Himachal Pradesh", "id": "hp"}, 
+                 "geometry": {"type": "Point", "coordinates": [77.0, 31.5]}},
+                
+                {"type": "Feature", "properties": {"name": "Punjab", "id": "punjab"}, 
+                 "geometry": {"type": "Point", "coordinates": [75.3, 30.9]}},
+                
+                {"type": "Feature", "properties": {"name": "Haryana", "id": "haryana"}, 
+                 "geometry": {"type": "Point", "coordinates": [76.3, 29.0]}},
+                
+                {"type": "Feature", "properties": {"name": "Delhi", "id": "delhi"}, 
+                 "geometry": {"type": "Point", "coordinates": [77.1, 28.7]}},
+                
+                {"type": "Feature", "properties": {"name": "Uttarakhand", "id": "uttarakhand"}, 
+                 "geometry": {"type": "Point", "coordinates": [79.0, 30.0]}},
+                
+                {"type": "Feature", "properties": {"name": "Uttar Pradesh", "id": "up"}, 
+                 "geometry": {"type": "Point", "coordinates": [80.9, 26.8]}},
+                
+                // Western Region
+                {"type": "Feature", "properties": {"name": "Rajasthan", "id": "rajasthan"}, 
+                 "geometry": {"type": "Point", "coordinates": [73.0, 27.0]}},
+                
+                {"type": "Feature", "properties": {"name": "Gujarat", "id": "gujarat"}, 
+                 "geometry": {"type": "Point", "coordinates": [71.2, 22.3]}},
+                
+                {"type": "Feature", "properties": {"name": "Maharashtra", "id": "maharashtra"}, 
+                 "geometry": {"type": "Point", "coordinates": [75.7, 19.0]}},
+                
+                {"type": "Feature", "properties": {"name": "Goa", "id": "goa"}, 
+                 "geometry": {"type": "Point", "coordinates": [74.0, 15.3]}},
+                
+                // Central Region
+                {"type": "Feature", "properties": {"name": "Madhya Pradesh", "id": "mp"}, 
+                 "geometry": {"type": "Point", "coordinates": [78.7, 22.9]}},
+                
+                {"type": "Feature", "properties": {"name": "Chhattisgarh", "id": "chhattisgarh"}, 
+                 "geometry": {"type": "Point", "coordinates": [81.9, 21.3]}},
+                
+                // Eastern Region
+                {"type": "Feature", "properties": {"name": "West Bengal", "id": "wb"}, 
+                 "geometry": {"type": "Point", "coordinates": [87.9, 24.0]}},
+                
+                {"type": "Feature", "properties": {"name": "Bihar", "id": "bihar"}, 
+                 "geometry": {"type": "Point", "coordinates": [85.3, 25.6]}},
+                
+                {"type": "Feature", "properties": {"name": "Jharkhand", "id": "jharkhand"}, 
+                 "geometry": {"type": "Point", "coordinates": [85.3, 23.6]}},
+                
+                {"type": "Feature", "properties": {"name": "Odisha", "id": "odisha"}, 
+                 "geometry": {"type": "Point", "coordinates": [84.7, 20.3]}},
+                
+                {"type": "Feature", "properties": {"name": "Sikkim", "id": "sikkim"}, 
+                 "geometry": {"type": "Point", "coordinates": [88.5, 27.5]}},
+                
+                // Northeast Region
+                {"type": "Feature", "properties": {"name": "Arunachal Pradesh", "id": "arunachal"}, 
+                 "geometry": {"type": "Point", "coordinates": [94.0, 28.0]}},
+                
+                {"type": "Feature", "properties": {"name": "Nagaland", "id": "nagaland"}, 
+                 "geometry": {"type": "Point", "coordinates": [94.5, 26.2]}},
+                
+                {"type": "Feature", "properties": {"name": "Manipur", "id": "manipur"}, 
+                 "geometry": {"type": "Point", "coordinates": [93.9, 24.7]}},
+                
+                {"type": "Feature", "properties": {"name": "Mizoram", "id": "mizoram"}, 
+                 "geometry": {"type": "Point", "coordinates": [92.9, 23.2]}},
+                
+                {"type": "Feature", "properties": {"name": "Tripura", "id": "tripura"}, 
+                 "geometry": {"type": "Point", "coordinates": [91.7, 23.8]}},
+                
+                {"type": "Feature", "properties": {"name": "Meghalaya", "id": "meghalaya"}, 
+                 "geometry": {"type": "Point", "coordinates": [91.4, 25.5]}},
+                
+                {"type": "Feature", "properties": {"name": "Assam", "id": "assam"}, 
+                 "geometry": {"type": "Point", "coordinates": [92.9, 26.2]}},
+                
+                // Southern Region
+                {"type": "Feature", "properties": {"name": "Karnataka", "id": "karnataka"}, 
+                 "geometry": {"type": "Point", "coordinates": [75.7, 15.3]}},
+                
+                {"type": "Feature", "properties": {"name": "Kerala", "id": "kerala"}, 
+                 "geometry": {"type": "Point", "coordinates": [76.3, 10.5]}},
+                
+                {"type": "Feature", "properties": {"name": "Tamil Nadu", "id": "tn"}, 
+                 "geometry": {"type": "Point", "coordinates": [78.7, 11.1]}},
+                
+                {"type": "Feature", "properties": {"name": "Andhra Pradesh", "id": "ap"}, 
+                 "geometry": {"type": "Point", "coordinates": [80.6, 15.9]}},
+                
+                {"type": "Feature", "properties": {"name": "Telangana", "id": "telangana"}, 
+                 "geometry": {"type": "Point", "coordinates": [79.0, 18.1]}},
+                
+                // Union Territories
+                {"type": "Feature", "properties": {"name": "Puducherry", "id": "puducherry"}, 
+                 "geometry": {"type": "Point", "coordinates": [79.8, 11.9]}},
+                
+                {"type": "Feature", "properties": {"name": "Andaman & Nicobar Islands", "id": "andaman"}, 
+                 "geometry": {"type": "Point", "coordinates": [92.7, 11.7]}},
+                
+                {"type": "Feature", "properties": {"name": "Lakshadweep", "id": "lakshadweep"}, 
+                 "geometry": {"type": "Point", "coordinates": [72.6, 10.6]}},
+                
+                {"type": "Feature", "properties": {"name": "Dadra and Nagar Haveli and Daman and Diu", "id": "dnh-dd"}, 
+                 "geometry": {"type": "Point", "coordinates": [73.0, 20.4]}},
+                
+                {"type": "Feature", "properties": {"name": "Chandigarh", "id": "chandigarh"}, 
+                 "geometry": {"type": "Point", "coordinates": [76.8, 30.7]}}
+            ]
+        };
+
+        // Add GeoJSON layer - all as circle markers
+        const geojsonLayer = L.geoJSON(indiaStates, {
+            pointToLayer: function (feature, latlng) {
+                const isVisited = visitedStates.has(feature.properties.id);
+                return L.circleMarker(latlng, {
+                    radius: 10,
+                    fillColor: isVisited ? '#4CAF50' : '#e0e0e0',
+                    color: 'white',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+            },
+            onEachFeature: function(feature, layer) {
+                layer.on({
+                    mouseover: function(e) {
+                        const marker = e.target;
+                        marker.setStyle({
+                            radius: 12,
+                            weight: 3,
+                            fillOpacity: 1
+                        });
+                        info.update(feature.properties);
+                    },
+                    mouseout: function(e) {
+                        const marker = e.target;
+                        marker.setStyle({
+                            radius: 10,
+                            weight: 2,
+                            fillOpacity: 0.8
+                        });
+                        info.update();
+                    },
+                    click: function(e) {
+                        const stateId = feature.properties.id;
+                        
+                        if (visitedStates.has(stateId)) {
+                            visitedStates.delete(stateId);
+                        } else {
+                            visitedStates.add(stateId);
+                        }
+                        
+                        saveVisitedStates();
+                        
+                        // Update this specific marker
+                        const isVisited = visitedStates.has(stateId);
+                        e.target.setStyle({
+                            fillColor: isVisited ? '#4CAF50' : '#e0e0e0'
+                        });
+                        
+                        updateCount();
+                        sendUpdateToParent();
+                    }
+                });
+            }
+        }).addTo(map);
+
+        // Info control
+        const info = L.control();
+
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info-box');
+            this.update();
+            return this._div;
+        };
+
+        info.update = function (props) {
+            this._div.innerHTML = '<h4>India Travel Tracker</h4>' +  
+                (props ? '<b>' + props.name + '</b><br/>Click to mark as visited' : 'Hover over a state');
+        };
+
+        info.addTo(map);
+
+        // Count control
+        const countControl = L.control({position: 'bottomleft'});
+
+        countControl.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'visited-count');
+            this.update();
+            return this._div;
+        };
+
+        countControl.update = function () {
+            this._div.innerHTML = `<div>✓ Visited: ${visitedStates.size}/36</div>`;
+        };
+
+        countControl.addTo(map);
+
+        // Legend
+        const legend = L.control({position: 'bottomright'});
+
+        legend.onAdd = function (map) {
+            const div = L.DomUtil.create('div', 'legend');
+            div.innerHTML = 
+                '<i style="background:#4CAF50"></i> Visited<br>' +
+                '<i style="background:#e0e0e0"></i> Not Visited';
+            return div;
+        };
+
+        legend.addTo(map);
+
+        // Save to localStorage
+        function saveVisitedStates() {
+            try {
+                localStorage.setItem('indiaMapVisited', JSON.stringify([...visitedStates]));
+            } catch (e) {
+                console.error('Error saving data:', e);
+            }
+        }
+
+        // Update count
+        function updateCount() {
+            countControl.update();
+        }
+
+        // Send statistics to parent window
+        function sendUpdateToParent() {
+            const regionalStats = calculateStatistics();
+            window.parent.postMessage({
+                type: 'indiaMapUpdate',
+                visited: visitedStates.size,
+                stats: {
+                    states: regionalStats.statesCount,
+                    uts: regionalStats.utsCount,
+                    total: regionalStats.totalCount,
+                    regions: {
+                        north: regionalStats.north,
+                        south: regionalStats.south,
+                        east: regionalStats.east,
+                        west: regionalStats.west,
+                        central: regionalStats.central,
+                        northeast: regionalStats.northeast,
+                        islands: regionalStats.islands
+                    }
+                }
+            }, '*');
+        }
+
+        // Calculate regional statistics
+        function calculateStatistics() {
+            const regions = {
+                north: ['jk', 'ladakh', 'hp', 'punjab', 'haryana', 'delhi', 'uttarakhand', 'up'],
+                south: ['karnataka', 'kerala', 'tn', 'ap', 'telangana'],
+                east: ['wb', 'bihar', 'jharkhand', 'odisha', 'sikkim'],
+                west: ['rajasthan', 'gujarat', 'maharashtra', 'goa'],
+                central: ['mp', 'chhattisgarh'],
+                northeast: ['arunachal', 'nagaland', 'manipur', 'mizoram', 'tripura', 'meghalaya', 'assam'],
+                islands: ['andaman', 'lakshadweep']
+            };
+
+            const stats = {};
+            for (let [region, states] of Object.entries(regions)) {
+                const visited = states.filter(s => visitedStates.has(s)).length;
+                stats[region] = {
+                    visited: visited,
+                    total: states.length
+                };
+            }
+
+            // Count states and UTs
+            const allStates = ['hp', 'punjab', 'uttarakhand', 'up', 'rajasthan', 'gujarat', 'maharashtra', 
+                              'goa', 'mp', 'chhattisgarh', 'wb', 'bihar', 'jharkhand', 'odisha', 'sikkim',
+                              'arunachal', 'nagaland', 'manipur', 'mizoram', 'tripura', 'meghalaya', 'assam',
+                              'karnataka', 'kerala', 'tn', 'ap', 'telangana', 'haryana'];
+            const allUTs = ['jk', 'ladakh', 'delhi', 'puducherry', 'andaman', 'lakshadweep', 'dnh-dd', 'chandigarh'];
+            
+            stats.statesCount = allStates.filter(s => visitedStates.has(s)).length;
+            stats.utsCount = allUTs.filter(s => visitedStates.has(s)).length;
+            stats.totalCount = visitedStates.size;
+
+            return stats;
+        }
+
+        // Get visited place names
+        function getVisitedPlaceNames() {
+            const stateNames = {
+                'jk': 'Jammu & Kashmir', 'ladakh': 'Ladakh', 'hp': 'Himachal Pradesh',
+                'punjab': 'Punjab', 'haryana': 'Haryana', 'delhi': 'Delhi',
+                'uttarakhand': 'Uttarakhand', 'up': 'Uttar Pradesh', 'rajasthan': 'Rajasthan',
+                'gujarat': 'Gujarat', 'maharashtra': 'Maharashtra', 'goa': 'Goa',
+                'mp': 'Madhya Pradesh', 'chhattisgarh': 'Chhattisgarh', 'wb': 'West Bengal',
+                'bihar': 'Bihar', 'jharkhand': 'Jharkhand', 'odisha': 'Odisha',
+                'sikkim': 'Sikkim', 'arunachal': 'Arunachal Pradesh', 'nagaland': 'Nagaland',
+                'manipur': 'Manipur', 'mizoram': 'Mizoram', 'tripura': 'Tripura',
+                'meghalaya': 'Meghalaya', 'assam': 'Assam', 'karnataka': 'Karnataka',
+                'kerala': 'Kerala', 'tn': 'Tamil Nadu', 'ap': 'Andhra Pradesh',
+                'telangana': 'Telangana', 'puducherry': 'Puducherry',
+                'andaman': 'Andaman & Nicobar Islands', 'lakshadweep': 'Lakshadweep',
+                'dnh-dd': 'Dadra and Nagar Haveli and Daman and Diu', 'chandigarh': 'Chandigarh'
+            };
+
+            return Array.from(visitedStates).map(id => stateNames[id] || id);
+        }
+
+        // Send visited places list to parent
+        function sendVisitedPlacesList() {
+            window.parent.postMessage({
+                type: 'visitedPlacesList',
+                places: getVisitedPlaceNames()
+            }, '*');
+        }
+
+        // Listen for messages from parent
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'requestUpdate') {
+                sendUpdateToParent();
+            } else if (event.data.type === 'requestVisitedPlaces') {
+                sendVisitedPlacesList();
+            }
+        });
+
+        // Initial update
+        updateCount();
+        sendUpdateToParent();
+        sendVisitedPlacesList();
+    </script>
+</body>
+</html>
