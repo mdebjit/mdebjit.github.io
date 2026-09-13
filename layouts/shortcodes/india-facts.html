@@ -1,0 +1,24 @@
+{{- $facts := .Site.Data.india_facts -}}
+{{- $highlights := where $facts "highlight" true -}}
+{{- $more := sort (where $facts "highlight" false) "place" -}}
+<section class="curiosity-column" aria-label="Facts about India's states and union territories">
+  <div class="curiosity-masthead">
+    <p>The Map Doesn't Tell You Everything</p>
+    <span>{{ len (where $facts "kind" "state") }} states / {{ len (where $facts "kind" "ut") }} UTs</span>
+  </div>
+  <div class="curiosity-spread">
+    {{- range $index, $fact := $highlights -}}
+      {{- partial "travel/curiosity.html" (dict "Fact" $fact "Index" (add $index 1)) -}}
+    {{- end -}}
+  </div>
+  {{- with $more }}
+  <details class="curiosity-more">
+    <summary><span>More stories across India</span><span class="curiosity-more-count">{{ len . }} more {{ if eq (len .) 1 }}place{{ else }}places{{ end }}</span><i class="fas fa-plus" aria-hidden="true"></i></summary>
+    <div class="curiosity-spread">
+      {{- range $index, $fact := . -}}
+        {{- partial "travel/curiosity.html" (dict "Fact" $fact "Index" (add (len $highlights) (add $index 1))) -}}
+      {{- end -}}
+    </div>
+  </details>
+  {{- end }}
+</section>

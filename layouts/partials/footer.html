@@ -1,0 +1,58 @@
+{{- if ne .Site.Params.footer.enable false -}}
+{{- $footer := .Site.Params.footer -}}
+{{- $author := .Site.Params.author | default .Site.Author -}}
+<footer class="footer journal-footer">
+    <div class="footer-container">
+        <div class="journal-footer-main">
+            <div class="journal-footer-identity">
+                <a class="journal-footer-brand" href="{{ .Site.Home.RelPermalink }}">{{ .Site.Title }}</a>
+                {{- with .Site.Params.home.profile.subtitle }}
+                <p>{{ . }}</p>
+                {{- end }}
+            </div>
+            <nav class="journal-footer-nav" aria-label="Footer navigation">
+                <ul class="journal-footer-links">
+                    {{- range where .Site.Menus.main "Identifier" "in" (slice "posts" "tags" "about") }}
+                    {{- $url := .URL | relLangURL -}}
+                    <li><a href="{{ $url }}"{{ if or ($.IsMenuCurrent "main" .) (eq $.RelPermalink $url) }} aria-current="page"{{ end }}>{{ .Name }}</a></li>
+                    {{- end }}
+                </ul>
+                <div class="journal-footer-social">
+                    {{- with .Site.Params.social.github }}
+                    <a href="{{ printf "https://github.com/%s" . }}" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i><span>GitHub</span></a>
+                    {{- end }}
+                    {{- if .Site.Params.social.rss }}
+                        {{- with .Site.Home.OutputFormats.Get "RSS" }}
+                    <a href="{{ .RelPermalink }}" aria-label="RSS feed"><i class="fas fa-rss" aria-hidden="true"></i><span>RSS</span></a>
+                        {{- end }}
+                    {{- end }}
+                </div>
+            </nav>
+        </div>
+        {{- with $footer.custom }}
+        <div class="journal-footer-custom">{{ . | safeHTML }}</div>
+        {{- end }}
+        <div class="journal-footer-bottom">
+            <div class="journal-footer-credits" itemscope itemtype="https://schema.org/CreativeWork">
+                {{- if ne $footer.copyright false }}
+                <span>&copy; {{ with $footer.since }}{{ if lt . now.Year }}{{ . }}&ndash;{{ end }}{{ end }}<span itemprop="copyrightYear">{{ now.Year }}</span></span>
+                {{- end }}
+                {{- if ne $footer.author false }}
+                    {{- with $author.name }}
+                <a href="{{ $author.link | default $.Site.Home.RelPermalink }}" itemprop="copyrightHolder">{{ . }}</a>
+                    {{- end }}
+                {{- end }}
+            </div>
+            <div class="journal-footer-legal">
+                {{- with $footer.license }}<span>{{ . | safeHTML }}</span>{{ end -}}
+                {{- with $footer.icp }}<span>{{ . | safeHTML }}</span>{{ end -}}
+            </div>
+        </div>
+        {{- if ne $footer.hugo false }}
+            {{- $hugo := printf `<a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo %v">Hugo</a>` hugo.Version -}}
+            {{- $theme := `<a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreferrer">LoveIt</a>` -}}
+        <div class="journal-footer-powered">{{ dict "Hugo" $hugo "Theme" $theme | T "poweredBySome" | safeHTML }}</div>
+        {{- end }}
+    </div>
+</footer>
+{{- end -}}

@@ -1,0 +1,9 @@
+<article class="curiosity{{ with .Fact.number }} curiosity--feature{{ end }}" data-place="{{ .Fact.place }}" data-kind="{{ .Fact.kind }}">
+  <p class="curiosity-place">{{ printf "%02d" .Index }} / {{ .Fact.place }}</p>
+  {{- with .Fact.number }}
+  <p class="curiosity-number">{{ . }} <span>{{ $.Fact.unit }}</span></p>
+  {{- end }}
+  <h3>{{ .Fact.title }}</h3>
+  <p>{{ .Fact.text }}</p>
+  <a class="curiosity-source" href="{{ .Fact.source }}" target="_blank" rel="noopener noreferrer">{{ .Fact.sourceLabel }} <i class="fas fa-external-link-alt" aria-hidden="true"></i></a>
+</article>

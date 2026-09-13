@@ -1,0 +1,68 @@
+<section class="food-atlas" aria-label="India food atlas">
+  <figure class="food-photograph">
+    <img src="/images/india-food.jpg" alt="An Indian curry served with naan on a white plate" width="1400" height="758" loading="lazy">
+    <figcaption><span>A place at the table.</span><a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Photo via Unsplash</a></figcaption>
+  </figure>
+  <div class="food-heading">
+    <p class="journal-kicker">The food atlas / 36 stops</p>
+    <p class="food-title">Leave room for one more plate.</p>
+    <p class="food-intro">A few things worth a detour. Not the whole menu, just a place to begin.</p>
+  </div>
+  <div class="food-controls" hidden>
+    <label class="food-search"><i class="fas fa-search" aria-hidden="true"></i><span class="screen-reader-text">Search dishes or places</span><input id="food-search" type="search" placeholder="State or dish" autocomplete="off" aria-controls="food-menu"></label>
+    <label class="food-region">
+      <span class="screen-reader-text">Region</span>
+      <select id="food-region" aria-controls="food-menu">
+        <option value="">All India</option>
+        <option value="north">North</option>
+        <option value="south">South</option>
+        <option value="east">East</option>
+        <option value="west">West</option>
+        <option value="central">Central</option>
+        <option value="northeast">North-East</option>
+        <option value="islands">Islands</option>
+      </select>
+    </label>
+    <button type="button" class="food-reset" title="Clear filters" aria-label="Clear filters" disabled><i class="fas fa-times" aria-hidden="true"></i></button>
+    <span class="food-count" role="status" aria-live="polite">36 dishes</span>
+  </div>
+  <div class="food-menu" id="food-menu">
+    {{- range .Site.Data.india_food -}}
+    <article class="food-entry" data-region="{{ .region }}" data-search="{{ printf "%s %s" .state .dish | lower }}">
+      <p class="food-place">{{ .state }}</p>
+      <h4>{{ .dish }}</h4>
+      <p class="food-description">{{ .note }}</p>
+    </article>
+    {{- end -}}
+  </div>
+  <p class="food-no-results" hidden>No dishes found.</p>
+</section>
+<script>
+(() => {
+    const atlas = document.querySelector('.food-atlas');
+    const search = atlas.querySelector('#food-search');
+    const region = atlas.querySelector('#food-region');
+    const reset = atlas.querySelector('.food-reset');
+    const entries = [...atlas.querySelectorAll('.food-entry')];
+    function filterFood() {
+        const query = search.value.trim().toLowerCase();
+        let visible = 0;
+        entries.forEach(entry => {
+            entry.hidden = !(entry.dataset.search.includes(query) && (!region.value || entry.dataset.region === region.value));
+            if (!entry.hidden) visible++;
+        });
+        atlas.querySelector('.food-count').textContent = `${visible} ${visible === 1 ? 'dish' : 'dishes'}`;
+        atlas.querySelector('.food-no-results').hidden = visible !== 0;
+        reset.disabled = !search.value && !region.value;
+    }
+    search.addEventListener('input', filterFood);
+    region.addEventListener('change', filterFood);
+    reset.addEventListener('click', () => {
+        search.value = '';
+        region.value = '';
+        filterFood();
+        search.focus();
+    });
+    atlas.querySelector('.food-controls').hidden = false;
+})();
+</script>

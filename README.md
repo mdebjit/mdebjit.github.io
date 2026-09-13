@@ -49,6 +49,14 @@ The built site will be in the `public/` directory.
 
 This site is configured for GitHub Pages deployment. Push to the `master` branch and GitHub Actions should handle the rest.
 
+The workflow requires a repository Actions secret named `CARTO_BASEMAP_KEY`.
+It injects the key into the generated map after Hugo builds and fails if the secret is missing.
+Keep the key and generated output out of commits. The key remains visible in the live map's
+browser requests, so use a dedicated basemap key and any available usage or domain restrictions.
+
+Local builds without injection use CARTO's keyless tiles, which display a watermark.
+Posts with `draft = true` are excluded from production; use `hugo server -D` to preview drafts locally.
+
 ## Theme
 
 This blog uses the [LoveIt](https://github.com/dillonzq/LoveIt) theme. Theme documentation can be found [here](https://hugoloveit.com/).

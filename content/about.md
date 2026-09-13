@@ -2,6 +2,7 @@
 title: "About"
 date: 2025-10-25T00:00:00Z
 draft: false
+layout: "about"
 description: "About Ctrl + Alt + Escape - A blog covering technology, life, and adventures"
 ---
 

@@ -96,10 +96,10 @@ enableRobotsTXT = true
     enable = true
     custom = ""
     hugo = false
-    copyright = false
+    copyright = true
     author = true
     since = 2025
-    license = '© 2025 mdebjit | <a href="/license/">License & Terms</a> |'
+    license = '<a href="/license/">License &amp; Terms</a>'
 
   # Home page configuration
   [params.home]
