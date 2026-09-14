@@ -187,6 +187,7 @@
 .stat-readout,
 .verdict-list,
 .concept-list,
+.stat-key,
 .takeaway {
   color: var(--journal-ink);
   font-family: 'DM Sans', sans-serif;
@@ -271,6 +272,40 @@
   color: var(--journal-muted);
   font-size: 0.78rem;
   line-height: 1.75;
+}
+
+.content .stat-key {
+  margin: 0 0 1.75rem;
+  padding: 0 0 1.25rem;
+  border-bottom: 1px solid var(--journal-line);
+}
+
+.content .stat-key > div {
+  display: grid;
+  grid-template-columns: 4.75rem minmax(0, 1fr);
+  gap: 0.2rem 1rem;
+  align-items: baseline;
+  padding: 0.5rem 0 0;
+}
+
+.content .stat-key > div:first-child { padding-top: 0; }
+
+.single .content .stat-key dt {
+  margin: 0;
+  color: var(--journal-green);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.single .content .stat-key dd {
+  margin: 0;
+  min-width: 0;
+  color: var(--journal-ink);
+  font-size: 0.82rem;
+  line-height: 1.7;
 }
 
 .verdict-list {
@@ -455,6 +490,7 @@
   .stat-figures > div:first-child { border-top: 0; }
   .content .stat-figures dd { font-size: 2.25rem; }
   .stat-readout > div { grid-template-columns: 1fr; }
+  .content .stat-key > div { grid-template-columns: 1fr; gap: 0.1rem; }
   .verdict-list > div { grid-template-columns: 1fr; gap: 0.5rem; }
   .concept-list > div { grid-template-columns: 1fr; }
   .content .takeaway { grid-template-columns: 1fr; gap: 0.35rem; }

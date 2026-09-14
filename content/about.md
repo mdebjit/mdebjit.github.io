@@ -39,6 +39,6 @@ Escape is the invitation to break from the predictable. It's your chance to step
 Feel free to reach out if you want to discuss any of the topics covered here, or if you have suggestions for future posts.
 
 - **GitHub**: [@mdebjit](https://github.com/mdebjit)
-- **Email**: [Contact me](mailto:hello@example.com)
+- **Email**: [Contact me](mailto:debjitmondal05@gmail.com)
 
 ---
